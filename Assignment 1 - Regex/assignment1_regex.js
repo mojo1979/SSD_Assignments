@@ -1,7 +1,7 @@
-// Name: John Mo | SID : 991 345 314 | Title: Assignment 1 - RegEx
+// Name: John Mo | SID : 991 345 314 | Title: Assignment 1 - RegEx | NodeJS
 
 const fileio = require('fs');
-const csv = require('csv-parser');
+const csv = require('csv-parser'); //npm install csv-parser --save
 const csvObjects = [];
 const regExPatterns = {
   student : /^([0-9]{9}|[0-9]{3}\s[0-9]{3}\s[0-9]{3})$/,
@@ -18,12 +18,12 @@ const regExPatterns = {
 fileio.createReadStream('input.txt')
   .pipe(csv(["ValidType","Data"]))
   .on('data', function (row) {
-    row.Data = row.Data.trim();
-    csvObjects.push(row);
+    row.Data = row.Data.trim(); //Trim whitespace before and after data
+    csvObjects.push(row); //Push each row to oject array
   })
   .on('end', function(error){
     if (error) throw error;
-    for (var i = 0; i < csvObjects.length; i++) {
+    for (var i = 0; i < csvObjects.length; i++) { // Iterate thru each object and test regex pattern
       if (csvObjects[i].ValidType === 'previous' && i > 0) {
         if (csvObjects[i].Data === csvObjects[i-1].Data) console.log('yes');
         else console.log('no');
