@@ -3,7 +3,7 @@
 const fileio = require('fs');
 const csvObjects = [], fileBuffer = [];
 
-const regExPatterns = {
+const regExPatterns = { // Objectify RegEx Patterns for easy parsing and validating
   student : /^([0-9]{9}|[0-9]{3}\s[0-9]{3}\s[0-9]{3})$/,
   password : /^[\x20-\x7e]{12,}$/,
   username : /^[a-zA-Z0-9]{3,20}$/,
