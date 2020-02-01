@@ -1,8 +1,7 @@
 // Name: John Mo | SID : 991 345 314 | Title: Assignment 1 - RegEx | NodeJS
 
 const fileio = require('fs');
-const csv = require('csv-parser'); //npm install csv-parser --save
-const csvObjects = [];
+const csvObjects = [], fileBuffer = [];
 const regExPatterns = {
   student : /^([0-9]{9}|[0-9]{3}\s[0-9]{3}\s[0-9]{3})$/,
   password : /^[\x20-\x7e]{12,}$/,
@@ -15,19 +14,23 @@ const regExPatterns = {
   bio : /^(?!.*(<[A-Z"%=:_\/\-\s]*>|<\/[A-Z"%=:_\/\-\s]*>))/i
 };
 
-fileio.createReadStream('input.txt')
-  .pipe(csv(["ValidType","Data"]))
-  .on('data', function (row) {
-    row.Data = row.Data.trim(); //Trim whitespace before and after data
-    csvObjects.push(row); //Push each row to oject array
-  })
-  .on('end', function(error){
+fileio.createReadStream('input.txt').on('data', function (bufferContent){
+    fileBuffer.push(bufferContent);
+  }).on('end', function(error) {
     if (error) throw error;
+    const lines = fileBuffer[0].toString().split('\n');
+    for (var k = 0; k < lines.length; k++){ // Split the strings and put them into objects
+      if (lines[k] !== '' && lines[k].indexOf(',') !== -1 ){
+        var lineAtr = lines[k].split(/,(.+)/); // split at first comma, rest is data
+        csvObjects.push({ValidType : lineAtr[0], Data : lineAtr[1].trim()});
+      }
+    }
     for (var i = 0; i < csvObjects.length; i++) { // Iterate thru each object and test regex pattern
-      if (csvObjects[i].ValidType === 'previous' && i > 0) {
+      if (csvObjects[i].ValidType === 'previous' && i > 0)
         if (csvObjects[i].Data === csvObjects[i-1].Data) console.log('yes');
         else console.log('no');
-      } else if (regExPatterns[csvObjects[i].ValidType].test(csvObjects[i].Data)) console.log('yes');
+      else if (!regExPatterns.hasOwnProperty(csvObjects[i].ValidType)) console.log('Unknown RegEx Pattern ['+csvObjects[i].ValidType+']');
+      else if (regExPatterns[csvObjects[i].ValidType].test(csvObjects[i].Data)) console.log('yes');
       else console.log('no');
     }
   });
